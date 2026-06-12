@@ -1,0 +1,29 @@
+{
+  "phase": "assessed",
+  "discovery": {
+    "completedAt": "2026-06-09T12:00:00Z",
+    "components": 1,
+    "discoveryFile": ".atx/discovery.json"
+  },
+  "assessment": {
+    "workspaceId": "05379883-4880-4df4-9a54-e5bb197f6c1b",
+    "jobId": "47f7dbce-8deb-48ef-8aba-1e93a95a8b59",
+    "reportDir": ".atx/assessment-report/"
+  },
+  "spec": {
+    "folder": ".kiro/specs/aws-transform",
+    "requirementsApproved": false,
+    "tasksGenerated": false
+  },
+  "workStyle": null,
+  "execution": {
+    "currentTask": null,
+    "completedTasks": [],
+    "workspaceId": "05379883-4880-4df4-9a54-e5bb197f6c1b",
+    "activeJobIds": ["47f7dbce-8deb-48ef-8aba-1e93a95a8b59"]
+  },
+  "source_root": "/Users/subhakl/MAM301/DR1/AWS-DC-Summit-MAM301/ContosoUniversity",
+  "target_framework": "net8.0",
+  "interactive_mode": "interactive",
+  "updatedAt": "2026-06-09T15:24:25Z"
+}

@@ -1,0 +1,63 @@
+{
+  "completedAt": "2026-06-09T12:00:00Z",
+  "workspace": {
+    "rootPath": "/Users/subhakl/MAM301/DR1/AWS-DC-Summit-MAM301/ContosoUniversity",
+    "language": "C#",
+    "framework": "ASP.NET MVC 5",
+    "targetFramework": ".NET Framework 4.8",
+    "projectType": "Web Application (MVC)"
+  },
+  "components": [
+    {
+      "name": "ContosoUniversity",
+      "type": "ASP.NET MVC 5 Web Application",
+      "currentFramework": ".NET Framework 4.8",
+      "dependencies": {
+        "entityFramework": "EF Core 3.1.32 (on .NET Framework)",
+        "mvc": "ASP.NET MVC 5.2.9",
+        "database": "SQL Server (via Microsoft.Data.SqlClient 2.1.4)",
+        "messaging": "System.Messaging (MSMQ)",
+        "serialization": "Newtonsoft.Json 13.0.3",
+        "authentication": "Windows Authentication (IIS)",
+        "bundling": "Microsoft.AspNet.Web.Optimization 1.1.3"
+      },
+      "patterns": [
+        "MVC Controllers with Razor Views",
+        "Entity Framework Core DbContext",
+        "Repository pattern via BaseController",
+        "MSMQ-based notification system",
+        "Table-per-Hierarchy (TPH) inheritance",
+        "packages.config dependency management"
+      ],
+      "fileCount": {
+        "controllers": 7,
+        "models": 12,
+        "views": 22,
+        "services": 2
+      }
+    }
+  ],
+  "modernizationOpportunities": [
+    {
+      "component": "ContosoUniversity",
+      "source": ".NET Framework 4.8 / ASP.NET MVC 5",
+      "target": ".NET 10 / ASP.NET Core",
+      "risk": "MEDIUM",
+      "riskReason": "MSMQ dependency (System.Messaging) has no direct .NET Core equivalent; Windows Auth and IIS-specific features require rearchitecting",
+      "transformations": [
+        "ASP.NET MVC 5 → ASP.NET Core MVC",
+        "EF Core 3.1 → EF Core 9/10",
+        "System.Messaging (MSMQ) → Amazon SQS or in-memory queue",
+        "Web.config → appsettings.json",
+        "packages.config → PackageReference (SDK-style .csproj)",
+        "Global.asax → Program.cs / Startup.cs",
+        "BundleConfig → ASP.NET Core bundling or Vite/Webpack"
+      ]
+    }
+  ],
+  "agentMatch": {
+    "orchestratorAgent": "dotnet-chatty-agent",
+    "userFacingName": ".NET Modernization Agent",
+    "capabilities": "Assessment + transformation in a single job"
+  }
+}
