@@ -1,65 +1,106 @@
-# Contoso University - .NET Framework 4.8.2
+# Contoso University - .NET 8 (Modernized)
 
-This project is a ASP.NET MVC 5 targeting .NET Framework 4.8.2.
+This project is the modernized version of the Contoso University application, migrated from .NET Framework 4.8 / ASP.NET MVC 5 to .NET 8 / ASP.NET Core.
 
 ## Project Overview
 
 ### Framework
-- ASP.NET MVC 5 (.NET Framework 4.8.2)
+- ASP.NET Core (.NET 8)
+- Kestrel web server (cross-platform, container-ready)
 
-### Database Access: Entity Framework
-- Entity Framework Core 3.1.32
+### Database Access
+- Entity Framework Core 8.0 with Npgsql (PostgreSQL)
+
+### Frontend
+- Server-side: Razor Views with Bootstrap 5
+- Client-side: React 18 SPA (TypeScript, Vite, React Router)
 
 ### Project Structure
 ```
-ContosoUniversity/
-├── App_Start/              # Application startup configuration
-├── Controllers/            # MVC Controllers
-├── Data/                   # Entity Framework context and initializer
+ContosoUniversity-Modernized/
+├── ClientApp/              # React SPA (Vite + TypeScript)
+│   ├── src/                # React components and pages
+│   ├── package.json        # Node dependencies
+│   └── vite.config.ts      # Vite build configuration
+├── Controllers/            # ASP.NET Core MVC Controllers
+├── Data/                   # EF Core DbContext and initializer
 ├── Models/                 # Data models and view models
+├── Services/               # Application services (notifications, logging)
 ├── Views/                  # Razor views
-├── Content/                # CSS and other content
-├── Scripts/                # JavaScript files
-├── Properties/             # Assembly properties
-├── Global.asax             # Application global events
-├── Web.config              # Configuration file
-└── packages.config         # NuGet packages
+├── wwwroot/                # Static files
+├── Uploads/                # File upload storage
+├── Program.cs              # Application entry point and DI configuration
+├── appsettings.json        # Configuration (connection strings, logging)
+└── ContosoUniversity.csproj # SDK-style project file
 ```
+
+## Key Changes from Legacy Version
+
+| Area | Legacy (.NET Framework 4.8) | Modernized (.NET 8) |
+|------|----------------------------|---------------------|
+| Framework | ASP.NET MVC 5 | ASP.NET Core |
+| Project format | Old-style .csproj + packages.config | SDK-style .csproj |
+| Database | SQL Server LocalDB | PostgreSQL |
+| ORM | EF Core 3.1.32 | EF Core 8.0 |
+| Config | Web.config (XML) | appsettings.json |
+| Entry point | Global.asax | Program.cs |
+| Hosting | IIS Express (Windows-only) | Kestrel (cross-platform) |
+| Frontend | jQuery + Bootstrap 3 | React 18 + Bootstrap 5 |
+| Bundling | System.Web.Optimization | LigerShark WebOptimizer + Vite |
+| Auth | Windows Authentication | ASP.NET Core Negotiate |
 
 ## Database Configuration
 
-The application uses SQL Server LocalDB with the following connection string in `Web.config`:
-```xml
-  <connectionStrings>
-    <add name="DefaultConnection" connectionString="Data Source=(LocalDb)\MSSQLLocalDB;Initial Catalog=ContosoUniversityNoAuthEFCore;Integrated Security=True;MultipleActiveResultSets=True" />
-  </connectionStrings>
+The application uses PostgreSQL with the following connection string in `appsettings.json`:
+```json
+{
+  "ConnectionStrings": {
+    "SchoolContext": "Host=localhost;Port=5432;Database=ContosoUniversity;Username=<your-username>"
+  }
+}
 ```
+
+See `setup_postgresql.sql` for database setup scripts.
 
 ## Running the Application
 
 1. **Prerequisites**:
-   - Visual Studio 2019 or later
-   - IIS Express
-   - SQL Server LocalDB
-   - Microsoft Message Queue (MSMQ) Server enabled
+   - .NET 8 SDK
+   - PostgreSQL
+   - Node.js (for the React frontend)
 
 2. **Setup**:
-   - Open the project in Visual Studio
-   - Restore NuGet packages
-   - Build the solution
-   - Run using IIS Express
+   ```bash
+   # Restore .NET dependencies
+   dotnet restore
+
+   # Install frontend dependencies
+   cd ClientApp && npm install && cd ..
+
+   # Run the application
+   dotnet run
+   ```
+
+3. **Frontend development** (optional, for hot-reload):
+   ```bash
+   cd ClientApp
+   npm run dev
+   ```
 
 ## Features
 
-- **Student Management**: CRUD operations for students with pagination and search
-- **Course Management**: Manage courses and their assignments to departments
+- **Student Management**: CRUD operations with pagination and search
+- **Course Management**: Manage courses and department assignments
 - **Instructor Management**: Handle instructor assignments and office locations
-- **Department Management**: Manage departments and their administrators
+- **Department Management**: Manage departments and administrators
 - **Statistics**: View enrollment statistics by date
+- **Notifications**: Admin notification system for entity changes
+- **Teaching Material Uploads**: File upload support with configurable size limits (10 MB)
 
-## Database Initialization
+## Notification System
 
-The application uses Entity Framework Core Code First with a database initializer that:
-- Creates the database if it doesn't exist
-- Seeds sample data including students, instructors, courses, and departments
-- Handles model changes by recreating the database
+The notification system alerts administrators when entity operations (create, update, delete) occur. See `NOTIFICATION_SYSTEM_README.md` for details.
+
+## Migration Context
+
+This is the "after" state of a .NET modernization demo. The corresponding legacy application is in the `ContosoUniversity-Legacy` folder at the repository root.
