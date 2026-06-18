@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Amazon;
+using Amazon.SQS;
 using ContosoUniversity.Data;
 using ContosoUniversity.Services;
 
@@ -30,8 +32,11 @@ public class Program
         builder.Services.AddDbContext<SchoolContext>(options =>
             options.UseNpgsql(builder.Configuration.GetConnectionString("SchoolContext")));
 
+        // SQS client as singleton
+        builder.Services.AddSingleton<IAmazonSQS>(sp => new AmazonSQSClient(RegionEndpoint.USEast1));
+
         // Notification service DI registration
-        builder.Services.AddScoped<INotificationService, NotificationService>();
+        builder.Services.AddScoped<INotificationService, SqsNotificationService>();
 
         // Bundling/minification via LigerShark WebOptimizer
         builder.Services.AddWebOptimizer();
