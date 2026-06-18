@@ -34,7 +34,9 @@ namespace ContosoUniversity.Controllers.Api
                     d.Budget,
                     d.StartDate,
                     d.InstructorID,
-                    d.Administrator != null ? d.Administrator.LastName + ", " + d.Administrator.FirstMidName : "",
+                    d.Administrator != null
+                        ? d.Administrator.LastName + ", " + d.Administrator.FirstMidName
+                        : "",
                     d.RowVersion))
                 .ToListAsync();
 
@@ -68,6 +70,16 @@ namespace ContosoUniversity.Controllers.Api
         [HttpPost]
         public async Task<ActionResult<DepartmentDto>> CreateDepartment(CreateDepartmentRequest request)
         {
+            if (request.InstructorId.HasValue)
+            {
+                var instructorExists = await _db.Instructors.AnyAsync(i => i.ID == request.InstructorId.Value);
+                if (!instructorExists)
+                {
+                    ModelState.AddModelError("InstructorId", "The specified instructor does not exist.");
+                    return ValidationProblem();
+                }
+            }
+
             var department = new Department
             {
                 Name = request.Name,
@@ -109,6 +121,16 @@ namespace ContosoUniversity.Controllers.Api
         [HttpPut("{id}")]
         public async Task<ActionResult<DepartmentDto>> UpdateDepartment(int id, UpdateDepartmentRequest request)
         {
+            if (request.InstructorId.HasValue)
+            {
+                var instructorExists = await _db.Instructors.AnyAsync(i => i.ID == request.InstructorId.Value);
+                if (!instructorExists)
+                {
+                    ModelState.AddModelError("InstructorId", "The specified instructor does not exist.");
+                    return ValidationProblem();
+                }
+            }
+
             var department = await _db.Departments
                 .Include(d => d.Administrator)
                 .FirstOrDefaultAsync(d => d.DepartmentID == id);
@@ -116,10 +138,8 @@ namespace ContosoUniversity.Controllers.Api
             if (department == null)
                 return NotFound();
 
-            if (department.RowVersion != request.RowVersion)
-            {
-                return Conflict(new { message = "The department has been modified by another user. Please refresh and try again." });
-            }
+            // Set the original RowVersion for EF Core concurrency check
+            _db.Entry(department).Property(d => d.RowVersion).OriginalValue = request.RowVersion;
 
             department.Name = request.Name;
             department.Budget = request.Budget;
@@ -132,7 +152,31 @@ namespace ContosoUniversity.Controllers.Api
             }
             catch (DbUpdateConcurrencyException)
             {
-                return Conflict(new { message = "The department has been modified by another user. Please refresh and try again." });
+                // Reload the current database values
+                var currentDepartment = await _db.Departments
+                    .Include(d => d.Administrator)
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(d => d.DepartmentID == id);
+
+                if (currentDepartment == null)
+                    return NotFound();
+
+                var currentAdminName = currentDepartment.Administrator != null
+                    ? $"{currentDepartment.Administrator.LastName}, {currentDepartment.Administrator.FirstMidName}"
+                    : "";
+
+                return Conflict(new
+                {
+                    message = "The department has been modified by another user. Please review the current values and try again.",
+                    currentValues = new DepartmentDto(
+                        currentDepartment.DepartmentID,
+                        currentDepartment.Name,
+                        currentDepartment.Budget,
+                        currentDepartment.StartDate,
+                        currentDepartment.InstructorID,
+                        currentAdminName,
+                        currentDepartment.RowVersion)
+                });
             }
 
             _notificationService.SendNotification(

@@ -25,27 +25,35 @@ namespace ContosoUniversity.Controllers.Api
         }
 
         [HttpGet]
-        public async Task<ActionResult<PaginatedResult<StudentDto>>> GetStudents(
-            string sortOrder = "",
+        public async Task<ActionResult<PaginatedResponse<StudentDto>>> GetStudents(
+            string sortOrder = "name_asc",
             string searchString = "",
             int page = 1,
             int pageSize = 10)
         {
+            // Clamp pageSize between 1 and 50
+            pageSize = Math.Clamp(pageSize, 1, 50);
+
+            // Ensure page is at least 1
+            if (page < 1) page = 1;
+
             var query = _db.Students.AsQueryable();
 
             if (!string.IsNullOrEmpty(searchString))
             {
+                // Truncate searchString to max 50 characters
+                var search = searchString.Length > 50 ? searchString.Substring(0, 50) : searchString;
                 query = query.Where(s =>
-                    s.LastName.Contains(searchString) ||
-                    s.FirstMidName.Contains(searchString));
+                    s.LastName.Contains(search) ||
+                    s.FirstMidName.Contains(search));
             }
 
             query = sortOrder switch
             {
                 "name_desc" => query.OrderByDescending(s => s.LastName),
-                "Date" => query.OrderBy(s => s.EnrollmentDate),
+                "date_asc" => query.OrderBy(s => s.EnrollmentDate),
                 "date_desc" => query.OrderByDescending(s => s.EnrollmentDate),
-                _ => query.OrderBy(s => s.LastName)
+                _ => query.OrderBy(s => s.LastName) // "name_asc" or any invalid value defaults to name ascending
             };
 
             var totalCount = await query.CountAsync();
@@ -56,7 +64,7 @@ namespace ContosoUniversity.Controllers.Api
                 .Select(s => new StudentDto(s.ID, s.LastName, s.FirstMidName, s.EnrollmentDate))
                 .ToListAsync();
 
-            return Ok(new PaginatedResult<StudentDto>(students, totalCount, page, pageSize));
+            return Ok(new PaginatedResponse<StudentDto>(students, totalCount, page, pageSize));
         }
 
         [HttpGet("{id}")]
@@ -71,10 +79,8 @@ namespace ContosoUniversity.Controllers.Api
                 return NotFound();
 
             var enrollments = student.Enrollments.Select(e => new EnrollmentDto(
-                e.EnrollmentID,
-                e.CourseID,
                 e.Course.Title,
-                e.Grade.HasValue ? e.Grade.Value.ToString() : "No grade"
+                e.Grade.HasValue ? e.Grade.Value.ToString() : null
             )).ToList();
 
             var dto = new StudentDetailDto(

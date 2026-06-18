@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -29,7 +30,7 @@ namespace ContosoUniversity.Controllers.Api
             var instructors = await _db.Instructors
                 .Include(i => i.OfficeAssignment)
                 .Include(i => i.CourseAssignments)
-                    .ThenInclude(ca => ca.Course)
+                .OrderBy(i => i.LastName)
                 .ToListAsync();
 
             var dtos = instructors.Select(i => new InstructorDto(
@@ -38,7 +39,7 @@ namespace ContosoUniversity.Controllers.Api
                 i.FirstMidName,
                 i.HireDate,
                 i.OfficeAssignment?.Location ?? "",
-                i.CourseAssignments.Select(ca => ca.Course.Title).ToList()
+                i.CourseAssignments.Select(ca => ca.CourseID).ToArray()
             )).ToList();
 
             return Ok(dtos);
@@ -52,18 +53,26 @@ namespace ContosoUniversity.Controllers.Api
                 .Include(i => i.CourseAssignments)
                     .ThenInclude(ca => ca.Course)
                         .ThenInclude(c => c.Department)
+                .Include(i => i.CourseAssignments)
+                    .ThenInclude(ca => ca.Course)
+                        .ThenInclude(c => c.Enrollments)
+                            .ThenInclude(e => e.Student)
                 .FirstOrDefaultAsync(i => i.ID == id);
 
             if (instructor == null)
                 return NotFound();
 
-            var courses = instructor.CourseAssignments.Select(ca => new CourseDto(
+            var courses = instructor.CourseAssignments.Select(ca => new CourseWithEnrollmentsDto(
                 ca.Course.CourseID,
                 ca.Course.Title,
-                ca.Course.Credits,
-                ca.Course.DepartmentID,
-                ca.Course.Department?.Name ?? ""
+                ca.Course.Department?.Name ?? "",
+                ca.Course.Enrollments?.Select(e => new EnrollmentDto(
+                    e.Student != null ? $"{e.Student.LastName}, {e.Student.FirstMidName}" : "",
+                    e.Grade.HasValue ? e.Grade.Value.ToString() : null
+                )).ToList() ?? new List<EnrollmentDto>()
             )).ToList();
+
+            var assignedCourseIds = instructor.CourseAssignments.Select(ca => ca.CourseID).ToArray();
 
             var dto = new InstructorDetailDto(
                 instructor.ID,
@@ -71,6 +80,7 @@ namespace ContosoUniversity.Controllers.Api
                 instructor.FirstMidName,
                 instructor.HireDate,
                 instructor.OfficeAssignment?.Location ?? "",
+                assignedCourseIds,
                 courses);
 
             return Ok(dto);
@@ -117,20 +127,13 @@ namespace ContosoUniversity.Controllers.Api
                 EntityOperation.CREATE,
                 "System");
 
-            var courseNames = request.CourseIds != null
-                ? await _db.Courses
-                    .Where(c => request.CourseIds.Contains(c.CourseID))
-                    .Select(c => c.Title)
-                    .ToListAsync()
-                : new List<string>();
-
             var dto = new InstructorDto(
                 instructor.ID,
                 instructor.LastName,
                 instructor.FirstMidName,
                 instructor.HireDate,
                 request.OfficeLocation ?? "",
-                courseNames);
+                request.CourseIds ?? Array.Empty<int>());
 
             return CreatedAtAction(nameof(GetInstructor), new { id = instructor.ID }, dto);
         }
@@ -174,9 +177,9 @@ namespace ContosoUniversity.Controllers.Api
                 }
             }
 
-            // Sync course assignments
+            // Sync course assignments: add new, remove omitted
             var currentCourseIds = instructor.CourseAssignments.Select(ca => ca.CourseID).ToList();
-            var requestedCourseIds = request.CourseIds ?? new List<int>();
+            var requestedCourseIds = request.CourseIds ?? Array.Empty<int>();
 
             var toRemove = instructor.CourseAssignments
                 .Where(ca => !requestedCourseIds.Contains(ca.CourseID))
@@ -205,18 +208,13 @@ namespace ContosoUniversity.Controllers.Api
                 EntityOperation.UPDATE,
                 "System");
 
-            var courseNames = await _db.Courses
-                .Where(c => requestedCourseIds.Contains(c.CourseID))
-                .Select(c => c.Title)
-                .ToListAsync();
-
             var dto = new InstructorDto(
                 instructor.ID,
                 instructor.LastName,
                 instructor.FirstMidName,
                 instructor.HireDate,
                 request.OfficeLocation ?? "",
-                courseNames);
+                requestedCourseIds);
 
             return Ok(dto);
         }
@@ -238,6 +236,15 @@ namespace ContosoUniversity.Controllers.Api
             if (instructor.OfficeAssignment != null)
             {
                 _db.OfficeAssignments.Remove(instructor.OfficeAssignment);
+            }
+
+            // Null-out department administrator references
+            var departmentsAdministered = await _db.Departments
+                .Where(d => d.InstructorID == id)
+                .ToListAsync();
+            foreach (var dept in departmentsAdministered)
+            {
+                dept.InstructorID = null;
             }
 
             // Remove course assignments
