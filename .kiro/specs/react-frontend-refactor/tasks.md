@@ -301,8 +301,8 @@ This plan implements the refactoring of Contoso University from server-rendered 
 - [x] 16. Checkpoint - Ensure React app compiles and all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 17. Final cleanup — remove old MVC view controllers
-  - [~] 17.1 Remove legacy MVC controllers that are replaced by API controllers
+- [x] 17. Final cleanup — remove old MVC view controllers
+  - [x] 17.1 Remove legacy MVC controllers that are replaced by API controllers
     - Delete Controllers/HomeController.cs (replaced by SPA routing)
     - Delete Controllers/StudentsController.cs (replaced by Api/StudentsApiController)
     - Delete Controllers/CoursesController.cs (replaced by Api/CoursesApiController)
@@ -314,7 +314,7 @@ This plan implements the refactoring of Contoso University from server-rendered 
     - Verify the project still compiles successfully after removal
     - _Requirements: 13.2, 13.3_
 
-- [~] 18. Final checkpoint - Ensure full build and all tests pass
+- [x] 18. Final checkpoint - Ensure full build and all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
 ## Notes

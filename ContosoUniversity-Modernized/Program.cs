@@ -1,9 +1,11 @@
 using System;
+using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Amazon;
 using Amazon.SQS;
@@ -25,7 +27,7 @@ public class Program
         });
 
         // Add services to the container.
-        builder.Services.AddControllersWithViews();
+        builder.Services.AddControllers();
 
         builder.Services.AddAuthorization();
 
@@ -46,9 +48,6 @@ public class Program
             client.Timeout = TimeSpan.FromSeconds(5);
         });
 
-        // Bundling/minification via LigerShark WebOptimizer
-        builder.Services.AddWebOptimizer();
-
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.
@@ -58,7 +57,7 @@ public class Program
         }
         else
         {
-            app.UseExceptionHandler("/Home/Error");
+            app.UseExceptionHandler("/error");
             app.UseHsts();
         }
 
@@ -66,14 +65,29 @@ public class Program
         {
             app.UseHttpsRedirection();
         }
-        app.UseWebOptimizer();
+
+        // Serve static files from wwwroot (React SPA build output)
         app.UseStaticFiles();
+
+        // Serve uploaded teaching materials
+        var uploadsPath = Path.Combine(app.Environment.ContentRootPath, "Uploads");
+        if (Directory.Exists(uploadsPath))
+        {
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(uploadsPath),
+                RequestPath = "/Uploads"
+            });
+        }
+
         app.UseRouting();
         app.UseAuthorization();
 
-        app.MapControllerRoute(
-            name: "default",
-            pattern: "{controller=Home}/{action=Index}/{id?}");
+        // Map API controllers
+        app.MapControllers();
+
+        // SPA fallback: serve index.html for all non-API, non-file routes
+        app.MapFallbackToFile("index.html");
 
         app.Run();
     }
