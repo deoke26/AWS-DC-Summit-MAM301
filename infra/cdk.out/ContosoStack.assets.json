@@ -1,0 +1,67 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6": {
+      "displayName": "ContosoStack/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
+      "source": {
+        "path": "asset.faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-us-east-1-e650c2de": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1",
+          "objectKey": "faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6.zip",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-1"
+        }
+      }
+    },
+    "4c792a246725350977e0b31decb750626c56d18b10c0160a660ab81b514dfdc9": {
+      "displayName": "ContosoStack Template",
+      "source": {
+        "path": "ContosoStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-us-east-1-1b0a9215": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1",
+          "objectKey": "4c792a246725350977e0b31decb750626c56d18b10c0160a660ab81b514dfdc9.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {
+    "460d6257042e3a4a3856580970c6bab2c3def67153c3d8c95664e92ee8d8cbaa": {
+      "displayName": "MainApiTaskDef/MainApiContainer/AssetImage",
+      "source": {
+        "directory": "asset.460d6257042e3a4a3856580970c6bab2c3def67153c3d8c95664e92ee8d8cbaa",
+        "dockerFile": "ContosoUniversity-Modernized/Dockerfile"
+      },
+      "destinations": {
+        "current_account-us-east-1-192f7d2a": {
+          "repositoryName": "cdk-hnb659fds-container-assets-${AWS::AccountId}-us-east-1",
+          "imageTag": "460d6257042e3a4a3856580970c6bab2c3def67153c3d8c95664e92ee8d8cbaa",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-image-publishing-role-${AWS::AccountId}-us-east-1"
+        }
+      }
+    },
+    "eb9cfea284c0eebb925909d485502147faec253e0e01e57e863acf4b62286d84": {
+      "displayName": "NotificationTaskDef/NotificationContainer/AssetImage",
+      "source": {
+        "directory": "asset.eb9cfea284c0eebb925909d485502147faec253e0e01e57e863acf4b62286d84",
+        "dockerFile": "NotificationService.API/Dockerfile"
+      },
+      "destinations": {
+        "current_account-us-east-1-563cc388": {
+          "repositoryName": "cdk-hnb659fds-container-assets-${AWS::AccountId}-us-east-1",
+          "imageTag": "eb9cfea284c0eebb925909d485502147faec253e0e01e57e863acf4b62286d84",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-image-publishing-role-${AWS::AccountId}-us-east-1"
+        }
+      }
+    }
+  }
+}

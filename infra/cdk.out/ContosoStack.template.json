@@ -1,0 +1,1712 @@
+{
+ "Resources": {
+  "ContosoVpc72156101": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "ContosoStack/ContosoVpc"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/ContosoVpc/Resource"
+   }
+  },
+  "ContosoVpcPublicSubnet1Subnet3CFF633D": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.0.0/24",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "ContosoStack/ContosoVpc/PublicSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "ContosoVpc72156101"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/ContosoVpc/PublicSubnet1/Subnet"
+   }
+  },
+  "ContosoVpcPublicSubnet1RouteTable0029533E": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "ContosoStack/ContosoVpc/PublicSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "ContosoVpc72156101"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/ContosoVpc/PublicSubnet1/RouteTable"
+   }
+  },
+  "ContosoVpcPublicSubnet1RouteTableAssociationE585874E": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "ContosoVpcPublicSubnet1RouteTable0029533E"
+    },
+    "SubnetId": {
+     "Ref": "ContosoVpcPublicSubnet1Subnet3CFF633D"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/ContosoVpc/PublicSubnet1/RouteTableAssociation"
+   }
+  },
+  "ContosoVpcPublicSubnet1DefaultRouteE2AAE6CB": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "ContosoVpcIGW26C322F3"
+    },
+    "RouteTableId": {
+     "Ref": "ContosoVpcPublicSubnet1RouteTable0029533E"
+    }
+   },
+   "DependsOn": [
+    "ContosoVpcVPCGW9163F1AB"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/ContosoVpc/PublicSubnet1/DefaultRoute"
+   }
+  },
+  "ContosoVpcPublicSubnet1EIPF6809BBF": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "ContosoStack/ContosoVpc/PublicSubnet1"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/ContosoVpc/PublicSubnet1/EIP"
+   }
+  },
+  "ContosoVpcPublicSubnet1NATGatewayF16CB1D9": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "ContosoVpcPublicSubnet1EIPF6809BBF",
+      "AllocationId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "ContosoVpcPublicSubnet1Subnet3CFF633D"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "ContosoStack/ContosoVpc/PublicSubnet1"
+     }
+    ]
+   },
+   "DependsOn": [
+    "ContosoVpcPublicSubnet1DefaultRouteE2AAE6CB",
+    "ContosoVpcPublicSubnet1RouteTableAssociationE585874E"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/ContosoVpc/PublicSubnet1/NATGateway"
+   }
+  },
+  "ContosoVpcPublicSubnet2SubnetD2DE72CD": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.1.0/24",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "ContosoStack/ContosoVpc/PublicSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "ContosoVpc72156101"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/ContosoVpc/PublicSubnet2/Subnet"
+   }
+  },
+  "ContosoVpcPublicSubnet2RouteTableA539069C": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "ContosoStack/ContosoVpc/PublicSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "ContosoVpc72156101"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/ContosoVpc/PublicSubnet2/RouteTable"
+   }
+  },
+  "ContosoVpcPublicSubnet2RouteTableAssociation1325278B": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "ContosoVpcPublicSubnet2RouteTableA539069C"
+    },
+    "SubnetId": {
+     "Ref": "ContosoVpcPublicSubnet2SubnetD2DE72CD"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/ContosoVpc/PublicSubnet2/RouteTableAssociation"
+   }
+  },
+  "ContosoVpcPublicSubnet2DefaultRouteB8797CC0": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "ContosoVpcIGW26C322F3"
+    },
+    "RouteTableId": {
+     "Ref": "ContosoVpcPublicSubnet2RouteTableA539069C"
+    }
+   },
+   "DependsOn": [
+    "ContosoVpcVPCGW9163F1AB"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/ContosoVpc/PublicSubnet2/DefaultRoute"
+   }
+  },
+  "ContosoVpcPrivateSubnet1SubnetE19A7DBE": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.2.0/24",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "ContosoStack/ContosoVpc/PrivateSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "ContosoVpc72156101"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/ContosoVpc/PrivateSubnet1/Subnet"
+   }
+  },
+  "ContosoVpcPrivateSubnet1RouteTableADA666D8": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "ContosoStack/ContosoVpc/PrivateSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "ContosoVpc72156101"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/ContosoVpc/PrivateSubnet1/RouteTable"
+   }
+  },
+  "ContosoVpcPrivateSubnet1RouteTableAssociation9810DDFA": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "ContosoVpcPrivateSubnet1RouteTableADA666D8"
+    },
+    "SubnetId": {
+     "Ref": "ContosoVpcPrivateSubnet1SubnetE19A7DBE"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/ContosoVpc/PrivateSubnet1/RouteTableAssociation"
+   }
+  },
+  "ContosoVpcPrivateSubnet1DefaultRoute0A26F53B": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "ContosoVpcPublicSubnet1NATGatewayF16CB1D9"
+    },
+    "RouteTableId": {
+     "Ref": "ContosoVpcPrivateSubnet1RouteTableADA666D8"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/ContosoVpc/PrivateSubnet1/DefaultRoute"
+   }
+  },
+  "ContosoVpcPrivateSubnet2SubnetB72E3CAA": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.3.0/24",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "ContosoStack/ContosoVpc/PrivateSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "ContosoVpc72156101"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/ContosoVpc/PrivateSubnet2/Subnet"
+   }
+  },
+  "ContosoVpcPrivateSubnet2RouteTable2502A4A8": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "ContosoStack/ContosoVpc/PrivateSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "ContosoVpc72156101"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/ContosoVpc/PrivateSubnet2/RouteTable"
+   }
+  },
+  "ContosoVpcPrivateSubnet2RouteTableAssociationD6EDAD55": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "ContosoVpcPrivateSubnet2RouteTable2502A4A8"
+    },
+    "SubnetId": {
+     "Ref": "ContosoVpcPrivateSubnet2SubnetB72E3CAA"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/ContosoVpc/PrivateSubnet2/RouteTableAssociation"
+   }
+  },
+  "ContosoVpcPrivateSubnet2DefaultRouteE15096DB": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "ContosoVpcPublicSubnet1NATGatewayF16CB1D9"
+    },
+    "RouteTableId": {
+     "Ref": "ContosoVpcPrivateSubnet2RouteTable2502A4A8"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/ContosoVpc/PrivateSubnet2/DefaultRoute"
+   }
+  },
+  "ContosoVpcIGW26C322F3": {
+   "Type": "AWS::EC2::InternetGateway",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "ContosoStack/ContosoVpc"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/ContosoVpc/IGW"
+   }
+  },
+  "ContosoVpcVPCGW9163F1AB": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "InternetGatewayId": {
+     "Ref": "ContosoVpcIGW26C322F3"
+    },
+    "VpcId": {
+     "Ref": "ContosoVpc72156101"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/ContosoVpc/VPCGW"
+   }
+  },
+  "FrontendBucketEFE2E19C": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "PublicAccessBlockConfiguration": {
+     "BlockPublicAcls": true,
+     "BlockPublicPolicy": true,
+     "IgnorePublicAcls": true,
+     "RestrictPublicBuckets": true
+    },
+    "Tags": [
+     {
+      "Key": "aws-cdk:auto-delete-objects",
+      "Value": "true"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/FrontendBucket/Resource"
+   }
+  },
+  "FrontendBucketPolicy1DFF75D9": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "FrontendBucketEFE2E19C"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:PutBucketPolicy",
+        "s3:GetBucket*",
+        "s3:List*",
+        "s3:DeleteObject*"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+          "Arn"
+         ]
+        }
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "FrontendBucketEFE2E19C",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "FrontendBucketEFE2E19C",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "s3:GetObject",
+       "Condition": {
+        "StringEquals": {
+         "AWS:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":cloudfront::",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":distribution/",
+            {
+             "Ref": "FrontendDistributionE6EAF405"
+            }
+           ]
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "cloudfront.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "FrontendBucketEFE2E19C",
+            "Arn"
+           ]
+          },
+          "/*"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/FrontendBucket/Policy/Resource"
+   }
+  },
+  "FrontendBucketAutoDeleteObjectsCustomResourceDB860B32": {
+   "Type": "Custom::S3AutoDeleteObjects",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+      "Arn"
+     ]
+    },
+    "BucketName": {
+     "Ref": "FrontendBucketEFE2E19C"
+    }
+   },
+   "DependsOn": [
+    "FrontendBucketPolicy1DFF75D9"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/FrontendBucket/AutoDeleteObjectsCustomResource/Default"
+   }
+  },
+  "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role"
+   }
+  },
+  "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
+     },
+     "S3Key": "faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs24.x",
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Lambda function for auto-deleting objects in ",
+       {
+        "Ref": "FrontendBucketEFE2E19C"
+       },
+       " S3 bucket."
+      ]
+     ]
+    }
+   },
+   "DependsOn": [
+    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
+    "aws:asset:path": "asset.faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6",
+    "aws:asset:property": "Code"
+   }
+  },
+  "FrontendDistributionOrigin1S3OriginAccessControl51A3EFC6": {
+   "Type": "AWS::CloudFront::OriginAccessControl",
+   "Properties": {
+    "OriginAccessControlConfig": {
+     "Name": "ContosoStackFrontendDistribuOrigin1S3OriginAccessControl8F0EF476",
+     "OriginAccessControlOriginType": "s3",
+     "SigningBehavior": "always",
+     "SigningProtocol": "sigv4"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/FrontendDistribution/Origin1/S3OriginAccessControl/Resource"
+   }
+  },
+  "FrontendDistributionE6EAF405": {
+   "Type": "AWS::CloudFront::Distribution",
+   "Properties": {
+    "DistributionConfig": {
+     "CustomErrorResponses": [
+      {
+       "ErrorCode": 403,
+       "ResponseCode": 200,
+       "ResponsePagePath": "/index.html"
+      },
+      {
+       "ErrorCode": 404,
+       "ResponseCode": 200,
+       "ResponsePagePath": "/index.html"
+      }
+     ],
+     "DefaultCacheBehavior": {
+      "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+      "Compress": true,
+      "TargetOriginId": "ContosoStackFrontendDistributionOrigin1C548F026",
+      "ViewerProtocolPolicy": "allow-all"
+     },
+     "DefaultRootObject": "index.html",
+     "Enabled": true,
+     "HttpVersion": "http2",
+     "IPV6Enabled": true,
+     "Origins": [
+      {
+       "DomainName": {
+        "Fn::GetAtt": [
+         "FrontendBucketEFE2E19C",
+         "RegionalDomainName"
+        ]
+       },
+       "Id": "ContosoStackFrontendDistributionOrigin1C548F026",
+       "OriginAccessControlId": {
+        "Fn::GetAtt": [
+         "FrontendDistributionOrigin1S3OriginAccessControl51A3EFC6",
+         "Id"
+        ]
+       },
+       "S3OriginConfig": {
+        "OriginAccessIdentity": ""
+       }
+      }
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/FrontendDistribution/Resource"
+   }
+  },
+  "AuroraSgFE0A4948": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Security group for Aurora PostgreSQL cluster",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "255.255.255.255/32",
+      "Description": "Disallow all traffic",
+      "FromPort": 252,
+      "IpProtocol": "icmp",
+      "ToPort": 86
+     }
+    ],
+    "VpcId": {
+     "Ref": "ContosoVpc72156101"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/AuroraSg/Resource"
+   }
+  },
+  "AuroraSgfromContosoStackMainApiSgD7BB5BF0543264C6E4BB": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "Description": "Allow PostgreSQL from Main API",
+    "FromPort": 5432,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "AuroraSgFE0A4948",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "MainApiSg78068611",
+      "GroupId"
+     ]
+    },
+    "ToPort": 5432
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/AuroraSg/from ContosoStackMainApiSgD7BB5BF0:5432"
+   }
+  },
+  "AuroraClusterSubnetsF3E9E6AD": {
+   "Type": "AWS::RDS::DBSubnetGroup",
+   "Properties": {
+    "DBSubnetGroupDescription": "Subnets for AuroraCluster database",
+    "SubnetIds": [
+     {
+      "Ref": "ContosoVpcPrivateSubnet1SubnetE19A7DBE"
+     },
+     {
+      "Ref": "ContosoVpcPrivateSubnet2SubnetB72E3CAA"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/AuroraCluster/Subnets/Default"
+   }
+  },
+  "ContosoStackAuroraClusterSecretF48708B63fdaad7efa858a3daf9490cf0a702aeb": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Generated by the CDK for stack: ",
+       {
+        "Ref": "AWS::StackName"
+       }
+      ]
+     ]
+    },
+    "GenerateSecretString": {
+     "ExcludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\",
+     "GenerateStringKey": "password",
+     "PasswordLength": 30,
+     "SecretStringTemplate": "{\"username\":\"clusteradmin\"}"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/AuroraCluster/Secret/Resource"
+   }
+  },
+  "AuroraClusterSecretAttachmentDB8032DA": {
+   "Type": "AWS::SecretsManager::SecretTargetAttachment",
+   "Properties": {
+    "SecretId": {
+     "Ref": "ContosoStackAuroraClusterSecretF48708B63fdaad7efa858a3daf9490cf0a702aeb"
+    },
+    "TargetId": {
+     "Ref": "AuroraCluster23D869C0"
+    },
+    "TargetType": "AWS::RDS::DBCluster"
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/AuroraCluster/Secret/Attachment/Resource"
+   }
+  },
+  "AuroraCluster23D869C0": {
+   "Type": "AWS::RDS::DBCluster",
+   "Properties": {
+    "CopyTagsToSnapshot": true,
+    "DBClusterParameterGroupName": "default.aurora-postgresql16",
+    "DBSubnetGroupName": {
+     "Ref": "AuroraClusterSubnetsF3E9E6AD"
+    },
+    "DatabaseName": "contoso",
+    "Engine": "aurora-postgresql",
+    "EngineVersion": "16.1",
+    "MasterUserPassword": {
+     "Fn::Join": [
+      "",
+      [
+       "{{resolve:secretsmanager:",
+       {
+        "Ref": "ContosoStackAuroraClusterSecretF48708B63fdaad7efa858a3daf9490cf0a702aeb"
+       },
+       ":SecretString:password::}}"
+      ]
+     ]
+    },
+    "MasterUsername": "clusteradmin",
+    "Port": 5432,
+    "ServerlessV2ScalingConfiguration": {
+     "MaxCapacity": 1,
+     "MinCapacity": 0.5
+    },
+    "VpcSecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "AuroraSgFE0A4948",
+       "GroupId"
+      ]
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Snapshot",
+   "DeletionPolicy": "Snapshot",
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/AuroraCluster/Resource"
+   }
+  },
+  "AuroraClusterWriterAA1AB06C": {
+   "Type": "AWS::RDS::DBInstance",
+   "Properties": {
+    "DBClusterIdentifier": {
+     "Ref": "AuroraCluster23D869C0"
+    },
+    "DBInstanceClass": "db.serverless",
+    "Engine": "aurora-postgresql",
+    "PromotionTier": 0,
+    "PubliclyAccessible": false
+   },
+   "DependsOn": [
+    "ContosoVpcPrivateSubnet1DefaultRoute0A26F53B",
+    "ContosoVpcPrivateSubnet1RouteTableAssociation9810DDFA",
+    "ContosoVpcPrivateSubnet2DefaultRouteE15096DB",
+    "ContosoVpcPrivateSubnet2RouteTableAssociationD6EDAD55"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/AuroraCluster/Writer/Resource"
+   }
+  },
+  "EcsCluster97242B84": {
+   "Type": "AWS::ECS::Cluster",
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/EcsCluster/Resource"
+   }
+  },
+  "AlbSg1155C1BE": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Security group for Application Load Balancer",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "SecurityGroupIngress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow HTTP from internet",
+      "FromPort": 80,
+      "IpProtocol": "tcp",
+      "ToPort": 80
+     }
+    ],
+    "VpcId": {
+     "Ref": "ContosoVpc72156101"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/AlbSg/Resource"
+   }
+  },
+  "MainApiSg78068611": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Security group for Main API Fargate service",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "ContosoVpc72156101"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/MainApiSg/Resource"
+   }
+  },
+  "MainApiSgfromContosoStackAlbSg75D4EAE5809FC89A85": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "Description": "Allow HTTP from ALB",
+    "FromPort": 80,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "MainApiSg78068611",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "AlbSg1155C1BE",
+      "GroupId"
+     ]
+    },
+    "ToPort": 80
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/MainApiSg/from ContosoStackAlbSg75D4EAE5:80"
+   }
+  },
+  "MainApiTaskDefTaskRole8A293C9A": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/MainApiTaskDef/TaskRole/Resource"
+   }
+  },
+  "MainApiTaskDefTaskRoleDefaultPolicy69DBA3B4": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "secretsmanager:GetSecretValue",
+        "secretsmanager:DescribeSecret"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "AuroraClusterSecretAttachmentDB8032DA"
+       }
+      },
+      {
+       "Action": [
+        "sqs:SendMessage",
+        "sqs:ReceiveMessage"
+       ],
+       "Effect": "Allow",
+       "Resource": "arn:aws:sqs:us-east-1:836548370410:contoso-notifications"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MainApiTaskDefTaskRoleDefaultPolicy69DBA3B4",
+    "Roles": [
+     {
+      "Ref": "MainApiTaskDefTaskRole8A293C9A"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/MainApiTaskDef/TaskRole/DefaultPolicy/Resource"
+   }
+  },
+  "MainApiTaskDefD679AF41": {
+   "Type": "AWS::ECS::TaskDefinition",
+   "Properties": {
+    "ContainerDefinitions": [
+     {
+      "Environment": [
+       {
+        "Name": "AWS__SQS__QueueUrl",
+        "Value": "https://sqs.us-east-1.amazonaws.com/836548370410/contoso-notifications"
+       },
+       {
+        "Name": "NotificationService__BaseUrl",
+        "Value": "http://notification-service.local:5051"
+       }
+      ],
+      "Essential": true,
+      "Image": {
+       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.us-east-1.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-us-east-1:460d6257042e3a4a3856580970c6bab2c3def67153c3d8c95664e92ee8d8cbaa"
+      },
+      "LogConfiguration": {
+       "LogDriver": "awslogs",
+       "Options": {
+        "awslogs-group": {
+         "Ref": "MainApiTaskDefMainApiContainerLogGroup88F82EB5"
+        },
+        "awslogs-stream-prefix": "MainApi",
+        "awslogs-region": "us-east-1"
+       }
+      },
+      "Name": "MainApiContainer",
+      "PortMappings": [
+       {
+        "ContainerPort": 80,
+        "Protocol": "tcp"
+       }
+      ],
+      "Secrets": [
+       {
+        "Name": "ConnectionStrings__DefaultConnection",
+        "ValueFrom": {
+         "Ref": "AuroraClusterSecretAttachmentDB8032DA"
+        }
+       }
+      ]
+     }
+    ],
+    "Cpu": "256",
+    "ExecutionRoleArn": {
+     "Fn::GetAtt": [
+      "MainApiTaskDefExecutionRoleB5EE5263",
+      "Arn"
+     ]
+    },
+    "Family": "ContosoStackMainApiTaskDefE6A80AF8",
+    "Memory": "512",
+    "NetworkMode": "awsvpc",
+    "RequiresCompatibilities": [
+     "FARGATE"
+    ],
+    "TaskRoleArn": {
+     "Fn::GetAtt": [
+      "MainApiTaskDefTaskRole8A293C9A",
+      "Arn"
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/MainApiTaskDef/Resource"
+   }
+  },
+  "MainApiTaskDefMainApiContainerLogGroup88F82EB5": {
+   "Type": "AWS::Logs::LogGroup",
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/MainApiTaskDef/MainApiContainer/LogGroup/Resource"
+   }
+  },
+  "MainApiTaskDefExecutionRoleB5EE5263": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/MainApiTaskDef/ExecutionRole/Resource"
+   }
+  },
+  "MainApiTaskDefExecutionRoleDefaultPolicy48164C41": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:BatchGetImage"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ecr:us-east-1:",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":repository/",
+          {
+           "Fn::Sub": "cdk-hnb659fds-container-assets-${AWS::AccountId}-us-east-1"
+          }
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "ecr:GetAuthorizationToken",
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "MainApiTaskDefMainApiContainerLogGroup88F82EB5",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": [
+        "secretsmanager:GetSecretValue",
+        "secretsmanager:DescribeSecret"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "AuroraClusterSecretAttachmentDB8032DA"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MainApiTaskDefExecutionRoleDefaultPolicy48164C41",
+    "Roles": [
+     {
+      "Ref": "MainApiTaskDefExecutionRoleB5EE5263"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/MainApiTaskDef/ExecutionRole/DefaultPolicy/Resource"
+   }
+  },
+  "MainApiServiceB3E0FFCB": {
+   "Type": "AWS::ECS::Service",
+   "Properties": {
+    "Cluster": {
+     "Ref": "EcsCluster97242B84"
+    },
+    "DeploymentConfiguration": {
+     "Alarms": {
+      "AlarmNames": [],
+      "Enable": false,
+      "Rollback": false
+     },
+     "MaximumPercent": 200,
+     "MinimumHealthyPercent": 50
+    },
+    "DesiredCount": 1,
+    "EnableECSManagedTags": false,
+    "HealthCheckGracePeriodSeconds": 60,
+    "LaunchType": "FARGATE",
+    "LoadBalancers": [
+     {
+      "ContainerName": "MainApiContainer",
+      "ContainerPort": 80,
+      "TargetGroupArn": {
+       "Ref": "MainApiTargetGroupED56A9D9"
+      }
+     }
+    ],
+    "NetworkConfiguration": {
+     "AwsvpcConfiguration": {
+      "AssignPublicIp": "DISABLED",
+      "SecurityGroups": [
+       {
+        "Fn::GetAtt": [
+         "MainApiSg78068611",
+         "GroupId"
+        ]
+       }
+      ],
+      "Subnets": [
+       {
+        "Ref": "ContosoVpcPrivateSubnet1SubnetE19A7DBE"
+       },
+       {
+        "Ref": "ContosoVpcPrivateSubnet2SubnetB72E3CAA"
+       }
+      ]
+     }
+    },
+    "TaskDefinition": {
+     "Ref": "MainApiTaskDefD679AF41"
+    }
+   },
+   "DependsOn": [
+    "MainApiAlbHttpListener38019614",
+    "MainApiTaskDefTaskRoleDefaultPolicy69DBA3B4",
+    "MainApiTaskDefTaskRole8A293C9A"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/MainApiService/Service"
+   }
+  },
+  "MainApiAlb7FC59675": {
+   "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+   "Properties": {
+    "LoadBalancerAttributes": [
+     {
+      "Key": "deletion_protection.enabled",
+      "Value": "false"
+     }
+    ],
+    "Scheme": "internet-facing",
+    "SecurityGroups": [
+     {
+      "Fn::GetAtt": [
+       "AlbSg1155C1BE",
+       "GroupId"
+      ]
+     }
+    ],
+    "Subnets": [
+     {
+      "Ref": "ContosoVpcPublicSubnet1Subnet3CFF633D"
+     },
+     {
+      "Ref": "ContosoVpcPublicSubnet2SubnetD2DE72CD"
+     }
+    ],
+    "Type": "application"
+   },
+   "DependsOn": [
+    "ContosoVpcPublicSubnet1DefaultRouteE2AAE6CB",
+    "ContosoVpcPublicSubnet1RouteTableAssociationE585874E",
+    "ContosoVpcPublicSubnet2DefaultRouteB8797CC0",
+    "ContosoVpcPublicSubnet2RouteTableAssociation1325278B"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/MainApiAlb/Resource"
+   }
+  },
+  "MainApiAlbHttpListener38019614": {
+   "Type": "AWS::ElasticLoadBalancingV2::Listener",
+   "Properties": {
+    "DefaultActions": [
+     {
+      "TargetGroupArn": {
+       "Ref": "MainApiTargetGroupED56A9D9"
+      },
+      "Type": "forward"
+     }
+    ],
+    "LoadBalancerArn": {
+     "Ref": "MainApiAlb7FC59675"
+    },
+    "Port": 80,
+    "Protocol": "HTTP"
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/MainApiAlb/HttpListener/Resource"
+   }
+  },
+  "MainApiTargetGroupED56A9D9": {
+   "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+   "Properties": {
+    "HealthCheckPath": "/",
+    "HealthCheckPort": "80",
+    "HealthCheckProtocol": "HTTP",
+    "Port": 80,
+    "Protocol": "HTTP",
+    "TargetGroupAttributes": [
+     {
+      "Key": "stickiness.enabled",
+      "Value": "false"
+     }
+    ],
+    "TargetType": "ip",
+    "VpcId": {
+     "Ref": "ContosoVpc72156101"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/MainApiTargetGroup/Resource"
+   }
+  },
+  "ServiceDiscoveryNamespace8AEF4AC1": {
+   "Type": "AWS::ServiceDiscovery::PrivateDnsNamespace",
+   "Properties": {
+    "Name": "local",
+    "Vpc": {
+     "Ref": "ContosoVpc72156101"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/ServiceDiscoveryNamespace/Resource"
+   }
+  },
+  "NotificationSg6A53BA70": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Security group for Notification Service",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "ContosoVpc72156101"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/NotificationSg/Resource"
+   }
+  },
+  "NotificationSgfromContosoStackMainApiSgD7BB5BF050515953FDDD": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "Description": "Allow inbound from Main API on port 5051",
+    "FromPort": 5051,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "NotificationSg6A53BA70",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "MainApiSg78068611",
+      "GroupId"
+     ]
+    },
+    "ToPort": 5051
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/NotificationSg/from ContosoStackMainApiSgD7BB5BF0:5051"
+   }
+  },
+  "NotificationTaskDefTaskRole64C423B4": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/NotificationTaskDef/TaskRole/Resource"
+   }
+  },
+  "NotificationTaskDefTaskRoleDefaultPolicy3EECCBF5": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "sqs:SendMessage",
+        "sqs:ReceiveMessage",
+        "sqs:DeleteMessage"
+       ],
+       "Effect": "Allow",
+       "Resource": "arn:aws:sqs:us-east-1:836548370410:contoso-notifications"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "NotificationTaskDefTaskRoleDefaultPolicy3EECCBF5",
+    "Roles": [
+     {
+      "Ref": "NotificationTaskDefTaskRole64C423B4"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/NotificationTaskDef/TaskRole/DefaultPolicy/Resource"
+   }
+  },
+  "NotificationTaskDef7C2BF3C6": {
+   "Type": "AWS::ECS::TaskDefinition",
+   "Properties": {
+    "ContainerDefinitions": [
+     {
+      "Environment": [
+       {
+        "Name": "AWS__SQS__QueueUrl",
+        "Value": "https://sqs.us-east-1.amazonaws.com/836548370410/contoso-notifications"
+       }
+      ],
+      "Essential": true,
+      "Image": {
+       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.us-east-1.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-us-east-1:eb9cfea284c0eebb925909d485502147faec253e0e01e57e863acf4b62286d84"
+      },
+      "LogConfiguration": {
+       "LogDriver": "awslogs",
+       "Options": {
+        "awslogs-group": {
+         "Ref": "NotificationTaskDefNotificationContainerLogGroup47C57693"
+        },
+        "awslogs-stream-prefix": "NotificationService",
+        "awslogs-region": "us-east-1"
+       }
+      },
+      "Name": "NotificationContainer",
+      "PortMappings": [
+       {
+        "ContainerPort": 5051,
+        "Protocol": "tcp"
+       }
+      ]
+     }
+    ],
+    "Cpu": "256",
+    "ExecutionRoleArn": {
+     "Fn::GetAtt": [
+      "NotificationTaskDefExecutionRole04CEB468",
+      "Arn"
+     ]
+    },
+    "Family": "ContosoStackNotificationTaskDef491126AA",
+    "Memory": "512",
+    "NetworkMode": "awsvpc",
+    "RequiresCompatibilities": [
+     "FARGATE"
+    ],
+    "TaskRoleArn": {
+     "Fn::GetAtt": [
+      "NotificationTaskDefTaskRole64C423B4",
+      "Arn"
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/NotificationTaskDef/Resource"
+   }
+  },
+  "NotificationTaskDefNotificationContainerLogGroup47C57693": {
+   "Type": "AWS::Logs::LogGroup",
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/NotificationTaskDef/NotificationContainer/LogGroup/Resource"
+   }
+  },
+  "NotificationTaskDefExecutionRole04CEB468": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/NotificationTaskDef/ExecutionRole/Resource"
+   }
+  },
+  "NotificationTaskDefExecutionRoleDefaultPolicy1A8FDD0D": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:BatchGetImage"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ecr:us-east-1:",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":repository/",
+          {
+           "Fn::Sub": "cdk-hnb659fds-container-assets-${AWS::AccountId}-us-east-1"
+          }
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "ecr:GetAuthorizationToken",
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "NotificationTaskDefNotificationContainerLogGroup47C57693",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "NotificationTaskDefExecutionRoleDefaultPolicy1A8FDD0D",
+    "Roles": [
+     {
+      "Ref": "NotificationTaskDefExecutionRole04CEB468"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/NotificationTaskDef/ExecutionRole/DefaultPolicy/Resource"
+   }
+  },
+  "NotificationService2154020D": {
+   "Type": "AWS::ECS::Service",
+   "Properties": {
+    "Cluster": {
+     "Ref": "EcsCluster97242B84"
+    },
+    "DeploymentConfiguration": {
+     "Alarms": {
+      "AlarmNames": [],
+      "Enable": false,
+      "Rollback": false
+     },
+     "MaximumPercent": 200,
+     "MinimumHealthyPercent": 50
+    },
+    "DesiredCount": 1,
+    "EnableECSManagedTags": false,
+    "LaunchType": "FARGATE",
+    "NetworkConfiguration": {
+     "AwsvpcConfiguration": {
+      "AssignPublicIp": "DISABLED",
+      "SecurityGroups": [
+       {
+        "Fn::GetAtt": [
+         "NotificationSg6A53BA70",
+         "GroupId"
+        ]
+       }
+      ],
+      "Subnets": [
+       {
+        "Ref": "ContosoVpcPrivateSubnet1SubnetE19A7DBE"
+       },
+       {
+        "Ref": "ContosoVpcPrivateSubnet2SubnetB72E3CAA"
+       }
+      ]
+     }
+    },
+    "ServiceRegistries": [
+     {
+      "RegistryArn": {
+       "Fn::GetAtt": [
+        "NotificationServiceCloudmapService37656D3F",
+        "Arn"
+       ]
+      }
+     }
+    ],
+    "TaskDefinition": {
+     "Ref": "NotificationTaskDef7C2BF3C6"
+    }
+   },
+   "DependsOn": [
+    "NotificationTaskDefTaskRoleDefaultPolicy3EECCBF5",
+    "NotificationTaskDefTaskRole64C423B4"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/NotificationService/Service"
+   }
+  },
+  "NotificationServiceCloudmapService37656D3F": {
+   "Type": "AWS::ServiceDiscovery::Service",
+   "Properties": {
+    "DnsConfig": {
+     "DnsRecords": [
+      {
+       "TTL": 60,
+       "Type": "A"
+      }
+     ],
+     "NamespaceId": {
+      "Fn::GetAtt": [
+       "ServiceDiscoveryNamespace8AEF4AC1",
+       "Id"
+      ]
+     },
+     "RoutingPolicy": "MULTIVALUE"
+    },
+    "HealthCheckCustomConfig": {
+     "FailureThreshold": 1
+    },
+    "Name": "notification-service",
+    "NamespaceId": {
+     "Fn::GetAtt": [
+      "ServiceDiscoveryNamespace8AEF4AC1",
+      "Id"
+     ]
+    }
+   },
+   "DependsOn": [
+    "NotificationTaskDefTaskRoleDefaultPolicy3EECCBF5",
+    "NotificationTaskDefTaskRole64C423B4"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/NotificationService/CloudmapService/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/5VTTW/bMAz9Lc1ZUbMU6IYBOyRxVwQo0iwuehmGglYYj40teSKdLjD83wdZ+fCKdsDgA8nHR0p+pMZ6fD3Sowt44aFZb4cFZbpJBcxWwQs/NWjGunmsjJpt7ONyppZ1VpBJ68yiBOzsrVwt+ABZgWf8jE2YnSEQcvZEDs7NfBnMAuQWBF9gr5aediB4bjy3gt7iiRBvcogmImB+lmhFpWhqT7K/9a6uujv8E5jb3CNzq/hKN9PabONp0fveDEr6TXbwedBXJkjCV7pLsY7USS0uwQIF77NnNMKD9oeKqaUryOzPXWP8H71jQSogGH4xtG6VKVy93nhnRTcJsXjK6k7X9OreU052Ygwyz5wV74pw+jtwv7hVfs26SUAgA8ZZUbOgV3EKJwGTaR84klM0PoqXTI+FXTC3LGANtoo7CpdgIUevmziMUBXNA/gcpTfME+F1plVoWDe9c47uV/A5hHXjbYIbsnRctteIswJk0fewQ22KfkcmLnB0W0VQ6mbl4lp39jzW6IUr+SdgRmGdOLNFPy8hDzuPEnJ6hZVjEuf3U2BUhctZN3cuPwl79FuFBbCQKRysMyjAGrL5bqybSVUVZLoHdOdgPe1yUYC/4j6PWNAeOEe/l4/Snu7QC8PAut9fExu3Q7/XzeFdJpYXUCJXEHV6C35LRv7F+luNNQYFWrVCdrUPnJrFledwY99JLb3b0Rp9p2AnbSqQk81blThZoFx+0iM9/nipFzcPM+dxUlXDR/RMzn7ZXevR5Qc9Ct/FMxMNfW2FStSraP8AjaxmzQgFAAA="
+   },
+   "Metadata": {
+    "aws:cdk:path": "ContosoStack/CDKMetadata/Default"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
