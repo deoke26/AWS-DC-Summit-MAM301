@@ -38,6 +38,13 @@ public class Program
         // Notification service DI registration
         builder.Services.AddScoped<INotificationService, SqsNotificationService>();
 
+        // Typed HttpClient for notification microservice
+        builder.Services.AddHttpClient<INotificationClient, NotificationClient>(client =>
+        {
+            client.BaseAddress = new Uri("http://localhost:5051");
+            client.Timeout = TimeSpan.FromSeconds(5);
+        });
+
         // Bundling/minification via LigerShark WebOptimizer
         builder.Services.AddWebOptimizer();
 
