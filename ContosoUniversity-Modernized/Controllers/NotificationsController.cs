@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using ContosoUniversity.Data;
 using ContosoUniversity.Services;
 using ContosoUniversity.Models;
@@ -10,49 +11,37 @@ namespace ContosoUniversity.Controllers
 {
     public class NotificationsController : BaseController
     {
-        public NotificationsController(SchoolContext context) : base(context)
+        public NotificationsController(SchoolContext context, INotificationClient notificationClient) : base(context, notificationClient)
         {
         }
 
         // GET: api/notifications - Get pending notifications for admin
         [HttpGet]
-        public JsonResult GetNotifications()
+        public async Task<JsonResult> GetNotifications()
         {
-            var notifications = new List<Notification>();
-            
             try
             {
-                // Read all available notifications from the queue
-                Notification notification;
-                while ((notification = notificationService.ReceiveNotification()) != null)
-                {
-                    notifications.Add(notification);
-                    
-                    // Limit to prevent overwhelming the UI
-                    if (notifications.Count >= 10)
-                        break;
-                }
+                var notifications = await _notificationClient.GetNotificationsAsync();
+                return Json(new { 
+                    success = true, 
+                    notifications = notifications,
+                    count = notifications.Count 
+                });
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Error retrieving notifications: {ex.Message}");
                 return Json(new { success = false, message = "Error retrieving notifications" });
             }
-
-            return Json(new { 
-                success = true, 
-                notifications = notifications,
-                count = notifications.Count 
-            });
         }
 
         // POST: api/notifications/mark-read
         [HttpPost]
-        public JsonResult MarkAsRead(int id)
+        public async Task<JsonResult> MarkAsRead(int id)
         {
             try
             {
-                notificationService.MarkAsRead(id);
+                await _notificationClient.MarkAsReadAsync(id);
                 return Json(new { success = true });
             }
             catch (Exception ex)

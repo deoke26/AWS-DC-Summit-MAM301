@@ -7,6 +7,7 @@ using System.Net;
 using ContosoUniversity.Data;
 using ContosoUniversity.Models;
 using ContosoUniversity.Models.SchoolViewModels;
+using ContosoUniversity.Services;
 using Microsoft.AspNetCore.Mvc;
 
 using Microsoft.AspNetCore.Http;
@@ -18,7 +19,7 @@ namespace ContosoUniversity.Controllers
 {
     public class InstructorsController : BaseController
     {
-        public InstructorsController(SchoolContext context) : base(context)
+        public InstructorsController(SchoolContext context, INotificationClient notificationClient) : base(context, notificationClient)
         {
         }
 

@@ -5,6 +5,7 @@ using System.Net;
 using System.IO;
 using ContosoUniversity.Data;
 using ContosoUniversity.Models;
+using ContosoUniversity.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -18,7 +19,7 @@ namespace ContosoUniversity.Controllers
     {
         private readonly IWebHostEnvironment _env;
 
-        public CoursesController(SchoolContext context, IWebHostEnvironment env) : base(context)
+        public CoursesController(SchoolContext context, INotificationClient notificationClient, IWebHostEnvironment env) : base(context, notificationClient)
         {
             _env = env;
         }
