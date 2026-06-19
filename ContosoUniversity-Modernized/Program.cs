@@ -29,11 +29,40 @@ public class Program
         // Add services to the container.
         builder.Services.AddControllers();
 
+        builder.Services.AddCors(options =>
+        {
+            options.AddDefaultPolicy(policy =>
+            {
+                policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+            });
+        });
+
         builder.Services.AddAuthorization();
 
         // Entity Framework Core - SchoolContext
         builder.Services.AddDbContext<SchoolContext>(options =>
-            options.UseNpgsql(builder.Configuration.GetConnectionString("SchoolContext")));
+            options.UseNpgsql(GetConnectionString(builder.Configuration)));
+
+        static string GetConnectionString(IConfiguration config)
+        {
+            // Check if Aurora secret JSON is injected (ECS production)
+            var secretJson = config["ConnectionStrings:SchoolContext"];
+            if (!string.IsNullOrEmpty(secretJson) && secretJson.TrimStart().StartsWith("{"))
+            {
+                var secret = System.Text.Json.JsonDocument.Parse(secretJson).RootElement;
+                var host = secret.GetProperty("host").GetString();
+                var port = secret.GetProperty("port").GetInt32();
+                var username = secret.GetProperty("username").GetString();
+                var password = secret.GetProperty("password").GetString();
+                // Aurora secrets may use "dbname" or "dbClusterIdentifier"; fall back to "contoso"
+                var dbname = secret.TryGetProperty("dbname", out var dbnameEl)
+                    ? dbnameEl.GetString()
+                    : "contoso";
+                return $"Host={host};Port={port};Database={dbname};Username={username};Password={password}";
+            }
+            // Local development - use connection string as-is
+            return secretJson ?? config.GetConnectionString("SchoolContext") ?? "";
+        }
 
         // SQS client as singleton
         builder.Services.AddSingleton<IAmazonSQS>(sp => new AmazonSQSClient(RegionEndpoint.USEast1));
@@ -44,7 +73,8 @@ public class Program
         // Typed HttpClient for notification microservice
         builder.Services.AddHttpClient<INotificationClient, NotificationClient>(client =>
         {
-            client.BaseAddress = new Uri("http://localhost:5051");
+            var baseUrl = builder.Configuration["NotificationService:BaseUrl"] ?? "http://localhost:5051";
+            client.BaseAddress = new Uri(baseUrl);
             client.Timeout = TimeSpan.FromSeconds(5);
         });
 
@@ -63,7 +93,7 @@ public class Program
 
         if (!app.Environment.IsDevelopment())
         {
-            app.UseHttpsRedirection();
+            // HTTPS is terminated at CloudFront; ALB traffic is HTTP
         }
 
         // Serve static files from wwwroot (React SPA build output)
@@ -81,6 +111,7 @@ public class Program
         }
 
         app.UseRouting();
+        app.UseCors();
         app.UseAuthorization();
 
         // Map API controllers
@@ -88,6 +119,15 @@ public class Program
 
         // SPA fallback: serve index.html for all non-API, non-file routes
         app.MapFallbackToFile("index.html");
+
+        app.MapGet("/health", () => Microsoft.AspNetCore.Http.Results.Ok("healthy"));
+
+        // Seed database on startup
+        using (var scope = app.Services.CreateScope())
+        {
+            var context = scope.ServiceProvider.GetRequiredService<SchoolContext>();
+            DbInitializer.Initialize(context);
+        }
 
         app.Run();
     }

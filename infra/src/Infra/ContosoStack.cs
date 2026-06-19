@@ -7,8 +7,10 @@ using Amazon.CDK.AWS.ElasticLoadBalancingV2;
 using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.RDS;
 using Amazon.CDK.AWS.S3;
+using Amazon.CDK.AWS.S3.Deployment;
 using Amazon.CDK.AWS.ServiceDiscovery;
 using Amazon.CDK.AWS.SQS;
+using System.Collections.Generic;
 using Constructs;
 
 public class ContosoStack : Stack
@@ -55,38 +57,6 @@ public class ContosoStack : Stack
             }
         });
 
-        // Frontend Hosting (S3 + CloudFront)
-        _frontendBucket = new Bucket(this, "FrontendBucket", new BucketProps
-        {
-            BlockPublicAccess = BlockPublicAccess.BLOCK_ALL,
-            RemovalPolicy = RemovalPolicy.DESTROY,
-            AutoDeleteObjects = true
-        });
-
-        _distribution = new Distribution(this, "FrontendDistribution", new DistributionProps
-        {
-            DefaultBehavior = new BehaviorOptions
-            {
-                Origin = S3BucketOrigin.WithOriginAccessControl(_frontendBucket)
-            },
-            DefaultRootObject = "index.html",
-            ErrorResponses = new[]
-            {
-                new ErrorResponse
-                {
-                    HttpStatus = 403,
-                    ResponseHttpStatus = 200,
-                    ResponsePagePath = "/index.html"
-                },
-                new ErrorResponse
-                {
-                    HttpStatus = 404,
-                    ResponseHttpStatus = 200,
-                    ResponsePagePath = "/index.html"
-                }
-            }
-        });
-
         // Database - Aurora PostgreSQL Serverless v2
         _auroraSg = new SecurityGroup(this, "AuroraSg", new SecurityGroupProps
         {
@@ -99,7 +69,7 @@ public class ContosoStack : Stack
         {
             Engine = DatabaseClusterEngine.AuroraPostgres(new AuroraPostgresClusterEngineProps
             {
-                Version = AuroraPostgresEngineVersion.VER_16_1
+                Version = AuroraPostgresEngineVersion.VER_16_4
             }),
             ServerlessV2MinCapacity = 0.5,
             ServerlessV2MaxCapacity = 1,
@@ -129,14 +99,14 @@ public class ContosoStack : Stack
         });
         _albSg.AddIngressRule(Peer.AnyIpv4(), Port.Tcp(80), "Allow HTTP from internet");
 
-        // Main API Security Group - inbound on port 80 from ALB SG only
+        // Main API Security Group - inbound on port 8080 from ALB SG only
         _mainApiSg = new SecurityGroup(this, "MainApiSg", new SecurityGroupProps
         {
             Vpc = _vpc,
             Description = "Security group for Main API Fargate service",
             AllowAllOutbound = true
         });
-        _mainApiSg.AddIngressRule(_albSg, Port.Tcp(80), "Allow HTTP from ALB");
+        _mainApiSg.AddIngressRule(_albSg, Port.Tcp(8080), "Allow HTTP from ALB");
 
         // Wire Aurora SG to allow inbound from Main API SG on port 5432
         _auroraSg.AddIngressRule(_mainApiSg, Port.Tcp(5432), "Allow PostgreSQL from Main API");
@@ -145,7 +115,12 @@ public class ContosoStack : Stack
         _mainApiTaskDef = new FargateTaskDefinition(this, "MainApiTaskDef", new FargateTaskDefinitionProps
         {
             Cpu = 256,
-            MemoryLimitMiB = 512
+            MemoryLimitMiB = 512,
+            RuntimePlatform = new RuntimePlatform
+            {
+                CpuArchitecture = CpuArchitecture.ARM64,
+                OperatingSystemFamily = OperatingSystemFamily.LINUX
+            }
         });
 
         var mainApiContainer = _mainApiTaskDef.AddContainer("MainApiContainer", new ContainerDefinitionOptions
@@ -162,7 +137,7 @@ public class ContosoStack : Stack
 
         mainApiContainer.AddPortMappings(new PortMapping
         {
-            ContainerPort = 80,
+            ContainerPort = 8080,
             Protocol = Amazon.CDK.AWS.ECS.Protocol.TCP
         });
 
@@ -196,14 +171,14 @@ public class ContosoStack : Stack
         var targetGroup = new ApplicationTargetGroup(this, "MainApiTargetGroup", new ApplicationTargetGroupProps
         {
             Vpc = _vpc,
-            Port = 80,
+            Port = 8080,
             Protocol = ApplicationProtocol.HTTP,
             TargetType = TargetType.IP,
             HealthCheck = new Amazon.CDK.AWS.ElasticLoadBalancingV2.HealthCheck
             {
-                Port = "80",
+                Port = "8080",
                 Protocol = Amazon.CDK.AWS.ElasticLoadBalancingV2.Protocol.HTTP,
-                Path = "/"
+                Path = "/health"
             },
             Targets = new[] { _mainApiService }
         });
@@ -214,6 +189,69 @@ public class ContosoStack : Stack
             Port = 80,
             Protocol = ApplicationProtocol.HTTP,
             DefaultTargetGroups = new[] { targetGroup }
+        });
+
+        // Frontend Hosting (S3 + CloudFront with API proxy)
+        _frontendBucket = new Bucket(this, "FrontendBucket", new BucketProps
+        {
+            BlockPublicAccess = BlockPublicAccess.BLOCK_ALL,
+            RemovalPolicy = RemovalPolicy.DESTROY,
+            AutoDeleteObjects = true
+        });
+
+        var albOrigin = new HttpOrigin(_alb.LoadBalancerDnsName, new HttpOriginProps
+        {
+            ProtocolPolicy = OriginProtocolPolicy.HTTP_ONLY
+        });
+
+        _distribution = new Distribution(this, "FrontendDistribution", new DistributionProps
+        {
+            DefaultBehavior = new BehaviorOptions
+            {
+                Origin = S3BucketOrigin.WithOriginAccessControl(_frontendBucket)
+            },
+            AdditionalBehaviors = new Dictionary<string, IBehaviorOptions>
+            {
+                ["/api/*"] = new BehaviorOptions
+                {
+                    Origin = albOrigin,
+                    AllowedMethods = AllowedMethods.ALLOW_ALL,
+                    CachePolicy = CachePolicy.CACHING_DISABLED,
+                    OriginRequestPolicy = OriginRequestPolicy.ALL_VIEWER
+                },
+                ["/health"] = new BehaviorOptions
+                {
+                    Origin = albOrigin,
+                    AllowedMethods = AllowedMethods.ALLOW_ALL,
+                    CachePolicy = CachePolicy.CACHING_DISABLED,
+                    OriginRequestPolicy = OriginRequestPolicy.ALL_VIEWER
+                }
+            },
+            DefaultRootObject = "index.html",
+            ErrorResponses = new[]
+            {
+                new ErrorResponse
+                {
+                    HttpStatus = 403,
+                    ResponseHttpStatus = 200,
+                    ResponsePagePath = "/index.html"
+                },
+                new ErrorResponse
+                {
+                    HttpStatus = 404,
+                    ResponseHttpStatus = 200,
+                    ResponsePagePath = "/index.html"
+                }
+            }
+        });
+
+        // Deploy React SPA to S3 (built at deploy time)
+        new BucketDeployment(this, "DeployFrontend", new BucketDeploymentProps
+        {
+            Sources = new[] { Source.Asset("../ContosoUniversity-Modernized/client-app/dist") },
+            DestinationBucket = _frontendBucket,
+            Distribution = _distribution,
+            DistributionPaths = new[] { "/*" }
         });
 
         // Cloud Map Private DNS Namespace
@@ -236,7 +274,12 @@ public class ContosoStack : Stack
         _notificationTaskDef = new FargateTaskDefinition(this, "NotificationTaskDef", new FargateTaskDefinitionProps
         {
             Cpu = 256,
-            MemoryLimitMiB = 512
+            MemoryLimitMiB = 512,
+            RuntimePlatform = new RuntimePlatform
+            {
+                CpuArchitecture = CpuArchitecture.ARM64,
+                OperatingSystemFamily = OperatingSystemFamily.LINUX
+            }
         });
 
         var notificationContainer = _notificationTaskDef.AddContainer("NotificationContainer", new ContainerDefinitionOptions
@@ -293,8 +336,8 @@ public class ContosoStack : Stack
         // Environment Variables - Notification Service
         notificationContainer.AddEnvironment("AWS__SQS__QueueUrl", _sqsQueue.QueueUrl);
 
-        // Database connection - pass Aurora secret to Main API as ECS secret
-        mainApiContainer.AddSecret("ConnectionStrings__DefaultConnection", Amazon.CDK.AWS.ECS.Secret.FromSecretsManager(_auroraCluster.Secret!));
+        // Database connection - construct Npgsql connection string from Aurora cluster details
+        mainApiContainer.AddSecret("ConnectionStrings__SchoolContext", Amazon.CDK.AWS.ECS.Secret.FromSecretsManager(_auroraCluster.Secret!));
 
         // IAM Permissions - Least-privilege task role policies
 

@@ -6,7 +6,8 @@ new ContosoStack(app, "ContosoStack", new StackProps
 {
     Env = new Amazon.CDK.Environment
     {
-        Region = "us-east-1"
+        Account = System.Environment.GetEnvironmentVariable("CDK_DEFAULT_ACCOUNT"),
+        Region = System.Environment.GetEnvironmentVariable("CDK_DEFAULT_REGION") ?? "us-east-1"
     }
 });
 

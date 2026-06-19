@@ -23,7 +23,7 @@ function emitErrorNotification(message: string): void {
  * Centralized axios instance configured with /api base path and 30-second timeout.
  */
 const apiClient = axios.create({
-  baseURL: '/api',
+  baseURL: import.meta.env.VITE_API_URL || '/api',
   timeout: 30000,
 });
 

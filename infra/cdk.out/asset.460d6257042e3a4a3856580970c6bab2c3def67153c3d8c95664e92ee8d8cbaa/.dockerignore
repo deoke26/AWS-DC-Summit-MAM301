@@ -1,5 +1,0 @@
-infra/cdk.out
-**/node_modules
-**/bin
-**/obj
-**/.git
