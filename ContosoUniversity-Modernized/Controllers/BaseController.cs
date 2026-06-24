@@ -10,11 +10,12 @@ namespace ContosoUniversity.Controllers
     public abstract class BaseController : Controller
     {
         protected SchoolContext db;
-        protected NotificationService notificationService = new NotificationService();
+        protected readonly INotificationClient _notificationClient;
 
-        public BaseController(SchoolContext context)
+        public BaseController(SchoolContext context, INotificationClient notificationClient)
         {
             db = context;
+            _notificationClient = notificationClient;
         }
 
         protected void SendEntityNotification(string entityType, string entityId, EntityOperation operation)
@@ -27,22 +28,28 @@ namespace ContosoUniversity.Controllers
             try
             {
                 var userName = "System"; // No authentication, use System as default user
-                notificationService.SendNotification(entityType, entityId, entityDisplayName, operation, userName);
+                var displayPart = string.IsNullOrEmpty(entityDisplayName) ? entityId : entityDisplayName;
+                var message = $"{entityType} {displayPart} was {operation.ToString().ToLower()}d";
+
+                var notification = new Notification
+                {
+                    EntityType = entityType,
+                    EntityId = entityId,
+                    Operation = operation.ToString(),
+                    Message = message,
+                    CreatedAt = DateTime.UtcNow,
+                    CreatedBy = userName,
+                    IsRead = false
+                };
+
+                // Fire-and-forget: don't await the async call
+                _ = _notificationClient.SendNotificationAsync(notification);
             }
             catch (Exception ex)
             {
                 // Log the error but don't break the main operation
                 System.Diagnostics.Debug.WriteLine($"Failed to send notification: {ex.Message}");
             }
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                notificationService?.Dispose();
-            }
-            base.Dispose(disposing);
         }
     }
 }

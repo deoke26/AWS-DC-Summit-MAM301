@@ -67,8 +67,8 @@ Extract the notification functionality from the ContosoUniversity monolith into 
     - Add `builder.Services.AddHttpClient<INotificationClient, NotificationClient>()` with base address `http://localhost:5051` and timeout of 5 seconds
     - _Requirements: 5.3, 7.5_
 
-- [ ] 5. Update BaseController and all controllers for DI
-  - [~] 5.1 Update BaseController to use INotificationClient via constructor injection
+- [x] 5. Update BaseController and all controllers for DI
+  - [x] 5.1 Update BaseController to use INotificationClient via constructor injection
     - Add `INotificationClient` constructor parameter alongside `SchoolContext`
     - Store as `protected readonly INotificationClient _notificationClient`
     - Remove `protected NotificationService notificationService = new NotificationService()` field
@@ -76,38 +76,38 @@ Extract the notification functionality from the ContosoUniversity monolith into 
     - Remove the `Dispose` override that disposed `notificationService`
     - _Requirements: 5.4, 6.2, 6.5, 7.1, 7.2_
 
-  - [~] 5.2 Update StudentsController constructor to pass INotificationClient to base
+  - [x] 5.2 Update StudentsController constructor to pass INotificationClient to base
     - Add `INotificationClient notificationClient` parameter to constructor
     - Call `: base(context, notificationClient)`
     - _Requirements: 6.1_
 
-  - [~] 5.3 Update CoursesController constructor to pass INotificationClient to base
+  - [x] 5.3 Update CoursesController constructor to pass INotificationClient to base
     - Add `INotificationClient notificationClient` parameter to constructor
     - Call `: base(context, notificationClient)`
     - _Requirements: 6.1_
 
-  - [~] 5.4 Update DepartmentsController constructor to pass INotificationClient to base
+  - [x] 5.4 Update DepartmentsController constructor to pass INotificationClient to base
     - Add `INotificationClient notificationClient` parameter to constructor
     - Call `: base(context, notificationClient)`
     - _Requirements: 6.1_
 
-  - [~] 5.5 Update InstructorsController constructor to pass INotificationClient to base
+  - [x] 5.5 Update InstructorsController constructor to pass INotificationClient to base
     - Add `INotificationClient notificationClient` parameter to constructor
     - Call `: base(context, notificationClient)`
     - _Requirements: 6.1_
 
-  - [~] 5.6 Update HomeController constructor to pass INotificationClient to base
+  - [x] 5.6 Update HomeController constructor to pass INotificationClient to base
     - Add `INotificationClient notificationClient` parameter to constructor
     - Call `: base(context, notificationClient)`
     - _Requirements: 6.1_
 
-  - [~] 5.7 Update NotificationsController to use INotificationClient for GetNotifications and MarkAsRead
+  - [x] 5.7 Update NotificationsController to use INotificationClient for GetNotifications and MarkAsRead
     - Add `INotificationClient notificationClient` parameter to constructor, call `: base(context, notificationClient)`
     - Replace `GetNotifications` to call `_notificationClient.GetNotificationsAsync()` and return the list
     - Replace `MarkAsRead` to call `_notificationClient.MarkAsReadAsync(id)` with error handling
     - _Requirements: 6.1, 6.3, 6.4_
 
-- [~] 6. Final checkpoint - Build verification
+- [x] 6. Final checkpoint - Build verification
   - Run `dotnet build` on the full solution and ensure both projects compile without errors, ask the user if questions arise.
   - _Requirements: 1.5_
 
